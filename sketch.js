@@ -1,4 +1,6 @@
 var video;
+var videos = [];
+let vScale = 1;
 let poseNet;
 let pose;
 
@@ -6,6 +8,8 @@ var numNotes = 6;
 var musicalBoxes = [];
 
 var body;
+var people = [];
+var drawPeople = [];
 var drawCounter = 0;
 
 let notes = [60, 62, 64, 65, 67, 69, 70, 71, 72];
@@ -14,9 +18,13 @@ function setup() {
   createCanvas(640, 480);
   noStroke();
 
-  video = createCapture(VIDEO);
+  // video = createCapture(VIDEO);
+  video = createVideo('assets/video1.mov', vidLoaded);
+  for (let i = 0; i < 2; i++) {
+    videos[i] = createVideo('assets/video${i}.mov');
+  }
   video.size(width, height);
-  video.hide();
+  // video.hide();
 
   poseNet = ml5.poseNet(video, modelLoaded);
   poseNet.on('pose', gotHumans);
@@ -33,11 +41,20 @@ function setup() {
   masterVolume(0.2);
 }
 
+function vidLoaded(){
+  video.loop();
+  // video.speed(2);
+  // video.hide();
+}
+
 function gotHumans(humans) {
   // if there is pose data
   if (humans.length > 0) {
     // store data from first human detected
-    pose = humans[0].pose;
+  pose = humans[0].pose;
+  //   for (let i = 0; i < humans.length; i++) {
+  //     people.push (humans[i].pose);
+  //   }
     // console.log(pose);
   }
 }
@@ -52,20 +69,35 @@ function draw() {
   scale(-1, 1);
   image(video, 0, 0);
   if (pose) {
+    console.log("posenet poses on");
+    console.log(pose);
+    console.log(people);
+    // for (let i = 0; i < people.length; i ++) {
+    //   drawPeople.push(new DrawBody(people[i]));
+    // }
     body = new DrawBody(pose);
     for (let i = 0; i < numNotes; i++) {
       if (musicalBoxes[i].hits(pose.keypoints[0])) {
 
       }
+      // for (b in people) {
+      //   musicalBoxes[i].hits(b.keypoints[0])
+      // }
+      
       musicalBoxes[i].show();
-      // fill(20 + i * 20, 60);
-      // rect(i * width / numNotes, 0, width / numNotes, height);
+      fill(20 + i * 20, 60);
+      rect(i * width / numNotes, 0, width / numNotes, height);
     }
     if (drawCounter % 100 == 0) {
-
+      for (let i = 0; i < drawPeople.length; i++) {
+        drawPeople[i].update(people[i].keypoints[3], people[i].keypoints[1], people[i].keypoints[0], people[i].keypoints[6], people[i].keypoints[5], people[i].keypoints[8], people[i].keypoints[7], people[i].keypoints[10], people[i].keypoints[9]);
+      }
       body.update(pose.keypoints[3], pose.keypoints[1], pose.keypoints[0], pose.keypoints[6], pose.keypoints[5], pose.keypoints[8], pose.keypoints[7], pose.keypoints[10], pose.keypoints[9]);
 
       drawCounter = 0;
+    }
+    for (b in drawPeople) {
+      b.show();
     }
     body.show();
   }
