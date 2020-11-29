@@ -20,6 +20,8 @@ let BrooklynButton;
 let ATLButton;
 let SeoulButton
 
+var font;
+
 function preload() {
   // sounds = [loadSound('Sounds/pure-bell-c2.mp3'), loadSound('Sounds/pure-bell-ds2.mp3'), 
   // loadSound('Sounds/pure-bell-fs2.mp3'), loadSound('Sounds/pure-bell-a2.mp3'), 
@@ -33,6 +35,8 @@ function preload() {
   sounds.push (loadSound('Sounds/pure-bell-ds3.mp3'));
   sounds.push (loadSound('Sounds/pure-bell-fs3.mp3'));
   sounds.push (loadSound('Sounds/pure-bell-a3.mp3'));
+
+  font = loadFont('assets/Montserrat-Bold.ttf');
 }
 
 function setup() {
@@ -65,6 +69,10 @@ function setup() {
 
   // NYButton.mousePressed(changeVid0); 
   // BrooklynButton.mousePressed(changeVid1); 
+
+  var points = font.textToPoints('New York', 100, 200, 192, {
+    sampleFactor: 0.25
+  });
 }
 
 // function changeVid0(){
