@@ -1,21 +1,38 @@
 var video;
 var videos = [];
-let vScale = 1;
+let vScale = 20;
 let poseNet;
 let pose;
 
-var numNotes = 6;
+var numNotes = 8;
 var musicalBoxes = [];
+var sounds = [];
 
 var body;
-var people = [];
+var poses = [];
 var drawPeople = [];
 var drawCounter = 0;
 
 let notes = [60, 62, 64, 65, 67, 69, 70, 71, 72];
 
+function preload() {
+  // sounds = [loadSound('Sounds/pure-bell-c2.mp3'), loadSound('Sounds/pure-bell-ds2.mp3'), 
+  // loadSound('Sounds/pure-bell-fs2.mp3'), loadSound('Sounds/pure-bell-a2.mp3'), 
+  // loadSound('Sounds/pure-bell-c3.mp3'), loadSound('Sounds/pure-bell-ds3.mp3'),
+  // loadSound('Sounds/pure-bell-fs3.mp3'), loadSound('Sounds/pure-bell-a3.mp3')];
+  sounds.push (loadSound('Sounds/pure-bell-c2.mp3'));
+  sounds.push (loadSound('Sounds/pure-bell-ds2.mp3'));
+  sounds.push (loadSound('Sounds/pure-bell-fs2.mp3'));
+  sounds.push (loadSound('Sounds/pure-bell-a2.mp3'));
+  sounds.push (loadSound('Sounds/pure-bell-c3.mp3'));
+  sounds.push (loadSound('Sounds/pure-bell-ds3.mp3'));
+  sounds.push (loadSound('Sounds/pure-bell-fs3.mp3'));
+  sounds.push (loadSound('Sounds/pure-bell-a3.mp3'));
+}
+
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(850, 480);
+  pixelDensity(1);
   noStroke();
 
   // video = createCapture(VIDEO);
@@ -27,18 +44,17 @@ function setup() {
   // video.hide();
 
   poseNet = ml5.poseNet(video, modelLoaded);
-  poseNet.on('pose', gotHumans);
+  poseNet.on('pose', function(results) {
+    poses = results;
+  });
 
   for (let i = 0; i < numNotes; i++) {
 
     musicalBoxes.push(new MusicalBox(i));
   }
-
-
-
-
   synth = new p5.MonoSynth();
   masterVolume(0.2);
+
 }
 
 function vidLoaded(){
@@ -57,6 +73,7 @@ function gotHumans(humans) {
   //   }
     // console.log(pose);
   }
+  people = humans;
 }
 
 function modelLoaded() {
@@ -65,46 +82,93 @@ function modelLoaded() {
 
 function draw() {
   push();
-  translate(width, 0);
-  scale(-1, 1);
-  image(video, 0, 0);
-  if (pose) {
-    console.log("posenet poses on");
-    console.log(pose);
-    console.log(people);
-    // for (let i = 0; i < people.length; i ++) {
-    //   drawPeople.push(new DrawBody(people[i]));
-    // }
-    body = new DrawBody(pose);
+  image(video, 0, 0, width, height);
+
+  for (let i = 0; i < poses.length; i++) {
+    // For each pose detected, loop through all the keypoints
+    let pose = poses[i].pose;
     for (let i = 0; i < numNotes; i++) {
-      if (musicalBoxes[i].hits(pose.keypoints[0])) {
+      musicalBoxes[i].hits(pose.keypoints[0]);
+      musicalBoxes[i].hits(pose.keypoints[6]);
+      musicalBoxes[i].hits(pose.keypoints[14]);
+      // musicalBoxes[i].show();
+      // fill(20 + i * 20, 60);
+      // rect(i * width / numNotes, 0, width / numNotes, height);
+    }
 
-      }
-      // for (b in people) {
-      //   musicalBoxes[i].hits(b.keypoints[0])
-      // }
-      
-      musicalBoxes[i].show();
-      fill(20 + i * 20, 60);
-      rect(i * width / numNotes, 0, width / numNotes, height);
-    }
-    if (drawCounter % 100 == 0) {
-      for (let i = 0; i < drawPeople.length; i++) {
-        drawPeople[i].update(people[i].keypoints[3], people[i].keypoints[1], people[i].keypoints[0], people[i].keypoints[6], people[i].keypoints[5], people[i].keypoints[8], people[i].keypoints[7], people[i].keypoints[10], people[i].keypoints[9]);
-      }
-      body.update(pose.keypoints[3], pose.keypoints[1], pose.keypoints[0], pose.keypoints[6], pose.keypoints[5], pose.keypoints[8], pose.keypoints[7], pose.keypoints[10], pose.keypoints[9]);
-
-      drawCounter = 0;
-    }
-    for (b in drawPeople) {
-      b.show();
-    }
-    body.show();
+    // drawKeypoints();
+    // drawSkeleton();
   }
-  pop();
-  drawCounter++;
+
+  // if (people) {
+  //   console.log("posenet poses on");
+  //   console.log(pose);
+  //   console.log(people);
+  //   // for (let i = 0; i < people.length; i ++) {
+  //   //   drawPeople.push(new DrawBody(people[i]));
+  //   // }
+  //   body = new DrawBody(pose);
+  //   for (let i = 0; i < numNotes; i++) {
+  //     if (musicalBoxes[i].hits(pose.keypoints[0])) {
+
+  //     }
+  //     // for (b in people) {
+  //     //   musicalBoxes[i].hits(b.keypoints[0])
+  //     // }
+      
+  //     musicalBoxes[i].show();
+  //     fill(20 + i * 20, 60);
+  //     rect(i * width / numNotes, 0, width / numNotes, height);
+  //   }
+  //   if (drawCounter % 100 == 0) {
+  //     for (let i = 0; i < drawPeople.length; i++) {
+  //       drawPeople[i].update(people[i].keypoints[3], people[i].keypoints[1], people[i].keypoints[0], people[i].keypoints[6], people[i].keypoints[5], people[i].keypoints[8], people[i].keypoints[7], people[i].keypoints[10], people[i].keypoints[9]);
+  //     }
+  //     body.update(pose.keypoints[3], pose.keypoints[1], pose.keypoints[0], pose.keypoints[6], pose.keypoints[5], pose.keypoints[8], pose.keypoints[7], pose.keypoints[10], pose.keypoints[9]);
+
+  //     drawCounter = 0;
+  //   }
+  //   for (b in drawPeople) {
+  //     b.show();
+  //   }
+  //   body.show();
+  // }
+  // pop();
+  // drawCounter++;
+}
+// A function to draw ellipses over the detected keypoints
+function drawKeypoints()  {
+  // Loop through all the poses detected
+  for (let i = 0; i < poses.length; i++) {
+    // For each pose detected, loop through all the keypoints
+    let pose = poses[i].pose;
+    for (let j = 0; j < pose.keypoints.length; j++) {
+      // A keypoint is an object describing a body part (like rightArm or leftShoulder)
+      let keypoint = pose.keypoints[j];
+      // Only draw an ellipse is the pose probability is bigger than 0.2
+      if (keypoint.score > 0.2) {
+        fill(255, 0, 0);
+        noStroke();
+        ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
+      }
+    }
+  }
 }
 
+// A function to draw the skeletons
+function drawSkeleton() {
+  // Loop through all the skeletons detected
+  for (let i = 0; i < poses.length; i++) {
+    let skeleton = poses[i].skeleton;
+    // For every skeleton, loop through all body connections
+    for (let j = 0; j < skeleton.length; j++) {
+      let partA = skeleton[j][0];
+      let partB = skeleton[j][1];
+      stroke(255, 0, 0);
+      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+    }
+  }
+}
 function MusicalBox(num) {
   this.x = num * width / numNotes;
   this.y = 0;
@@ -115,26 +179,25 @@ function MusicalBox(num) {
   this.highlight = false;
 
   this.show = function() {
+    noStroke();
     if (this.highlight) {
       fill(this.color, 100);
     } else {
       fill(this.color, 60);
     }
     rect(this.x, this.y, this.width, this.height);
-    // fill(255);
-    // if (this.highlight) {
-    //   fill(255, 0, 0);
-    // }
-    // rect(this.x, 0, this.w, this.top);
-    // rect(this.x, height - this.bottom, this.w, this.bottom);
   }
 
   this.hits = function(nose) {
 
     if (nose.position.x > this.x && nose.position.x < this.x + this.width) {
       this.highlight = true;
-      let freqToPlay = midiToFreq(notes[num]);
-      synth.play(freqToPlay, 1);
+      // let freqToPlay = midiToFreq(notes[num]);
+      // synth.play(freqToPlay, 1);
+      if (!sounds[num].isPlaying()){
+        sounds[num].play();
+      }
+      
       return true;
     }
 
