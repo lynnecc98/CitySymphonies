@@ -15,6 +15,11 @@ var drawCounter = 0;
 
 let notes = [60, 62, 64, 65, 67, 69, 70, 71, 72];
 
+let NYButton;
+let BrooklynButton;
+let ATLButton;
+let SeoulButton
+
 function preload() {
   // sounds = [loadSound('Sounds/pure-bell-c2.mp3'), loadSound('Sounds/pure-bell-ds2.mp3'), 
   // loadSound('Sounds/pure-bell-fs2.mp3'), loadSound('Sounds/pure-bell-a2.mp3'), 
@@ -55,7 +60,19 @@ function setup() {
   synth = new p5.MonoSynth();
   masterVolume(0.2);
 
+  NYButton = createButton('New York');
+  BrooklynButton = createButton('Brooklyn');
+
+  // NYButton.mousePressed(changeVid0); 
+  // BrooklynButton.mousePressed(changeVid1); 
 }
+
+// function changeVid0(){
+//   video = createVideo('assets/video0.mov', vidLoaded);
+// }
+// function changeVid1(){
+//   video = createVideo('assets/video1.mov', vidLoaded);
+// }
 
 function vidLoaded(){
   video.loop();
