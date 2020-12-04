@@ -2,7 +2,12 @@ var video;
 var videos = [];
 let poseNet;
 let pose;
+let posesN = [];
 let poseNetReady = false;
+let poseNetReady0 = false;
+let poseNetReady1 = false;
+let poseNetReady2 = false;
+let poseNetReady3 = false;
 
 var numNotes = 8;
 var musicalBoxes = [];
@@ -10,16 +15,24 @@ var sounds = [];
 
 var body;
 var poses = [];
+var poses0 = [];
+var poses1 = [];
+var poses2 = [];
+var poses3 = [];
 
 let notes = [60, 62, 64, 65, 67, 69, 70, 71, 72];
 
 let NYButton;
 let BrooklynButton;
-let ATLButton;
-let SeoulButton
+let BusanButton;
+let DCButton
 
 let font;
 let flockFont = [];
+
+let currentVid = 0;
+
+let points;
 
 function preload() {
   sounds.push(loadSound('Sounds/pure-bell-c2.mp3'));
@@ -32,13 +45,22 @@ function preload() {
   sounds.push(loadSound('Sounds/pure-bell-a3.mp3'));
 
   font = loadFont('assets/Montserrat-Bold.ttf');
+
+  videos[0] = createVideo('assets/video0.mov', vidLoaded0);
+  videos[1] = createVideo('assets/video1.mov', vidLoaded1);
+  videos[2] = createVideo('assets/video2.mov', vidLoaded2);
+  videos[3] = createVideo('assets/video3.mov', vidLoaded3);
 }
 
 function setup() {
   createCanvas(850, 480);
   noStroke();
 
-  video = createVideo('assets/video1.mov', vidLoaded);
+  for (let i = 0; i < videos.length; i++) {
+    videos[i].hide();
+  }
+
+  // video = createVideo('assets/video1.mov', vidLoaded);
   // video = createCapture(VIDEO);
   // for (let i = 0; i < 2; i++) {
   //   videos[i] = createVideo('assets/video${i}.mov');
@@ -59,12 +81,15 @@ function setup() {
 
   NYButton = createButton('New York');
   BrooklynButton = createButton('Brooklyn');
+  BusanButton = createButton('Busan');
+  DCButton = createButton('Washington DC');
 
-  // NYButton.mousePressed(changeVid0); 
-  // BrooklynButton.mousePressed(changeVid1); 
+  NYButton.mousePressed(changeVid0); 
+  BrooklynButton.mousePressed(changeVid1); 
+  BusanButton.mousePressed(changeVid2);
+  DCButton.mousePressed(changeVid3);
 
-
-  var points = font.textToPoints('New York', 100, 300, 130, {
+  points = font.textToPoints('New York', 100, 300, 130, {
     sampleFactor: 0.25
   });
 
@@ -75,17 +100,86 @@ function setup() {
   }
 }
 
-// function changeVid0(){
-//   video = createVideo('assets/video0.mov', vidLoaded);
-// }
-// function changeVid1(){
-//   video = createVideo('assets/video1.mov', vidLoaded);
-// }
+function changeVid0(){
+  for (let i = 0; i < videos.length; i++) {
+    videos[i].pause();
+    videos[i].hide();
+  }
+  videos[0].play();
+  currentVid = 0;
+}
+function changeVid1(){
+  for (let i = 0; i < videos.length; i++) {
+    videos[i].pause();
+    videos[i].hide();
+  }
+  videos[1].play();
+  currentVid = 1;
+}
+function changeVid2(){
+  for (let i = 0; i < videos.length; i++) {
+    videos[i].pause();
+    videos[i].hide();
+  }
+  videos[2].play();
+  currentVid = 2;
+}
+function changeVid3(){
+  for (let i = 0; i < videos.length; i++) {
+    videos[i].pause();
+    videos[i].hide();
+  }
+  videos[3].play();
+  currentVid = 3;
+}
 
-function vidLoaded() {
-  video.size(width, height);
-  video.hide();
-  poseNet = ml5.poseNet(video, modelLoaded);
+function vidLoaded0() {
+  videos[0].size(width, height);
+  // videos[0].hide();
+  // videos[0].show();
+  // videos[0].play();
+  posesN[0] = ml5.poseNet(videos[0], modelLoaded0);
+  points = font.textToPoints('Brooklyn', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
+  // video.loop();
+  // video.speed(2);
+  // video.hide();
+}
+function vidLoaded1() {
+  videos[1].size(width, height);
+  // videos[1].hide();
+  posesN[1] = ml5.poseNet(videos[1], modelLoaded1);
+  points = font.textToPoints('New York', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
+  for (var i = 0; i < points.length; i++) {
+    var pt = points[i];
+    var newPoint = new FlockPoint(pt.x, pt.y);
+    flockFont.push(newPoint);
+  }
+  // video.loop();
+  // video.speed(2);
+  // video.hide();
+}
+function vidLoaded2() {
+  videos[2].size(width, height);
+  // videos[2].hide();
+  posesN[2] = ml5.poseNet(videos[2], modelLoaded2);
+  points = font.textToPoints('Busan', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
+  // video.loop();
+  // video.speed(2);
+  // video.hide();
+}
+function vidLoaded3() {
+  videos[3].size(width, height);
+  // videos[3].hide();
+  posesN[3] = ml5.poseNet(videos[3], modelLoaded3);
+  points = font.textToPoints('Washington DC', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
   // video.loop();
   // video.speed(2);
   // video.hide();
@@ -104,24 +198,73 @@ function gotHumans(humans) {
   people = humans;
 }
 
-function modelLoaded() {
+function modelLoaded0() {
+  console.log('poseNet ready');
+  poseNetReady0 = true;
+  // select('#status').html('Model Loaded');
+  poseNetReady = true;
+  videos[0].loop();
+
+  posesN[0].on('pose', function(results) {
+    poses0 = results;
+  });
+  
+}
+
+function modelLoaded1() {
   console.log('poseNet ready');
   // select('#status').html('Model Loaded');
   poseNetReady = true;
-  video.loop();
+  videos[1].loop();
 
-  poseNet.on('pose', function(results) {
-    poses = results;
+  posesN[1].on('pose', function(results) {
+    poses1 = results;
+  });
+}
+
+function modelLoaded2() {
+  console.log('poseNet ready');
+  // select('#status').html('Model Loaded');
+  poseNetReady = true;
+  videos[2].loop();
+
+  posesN[2].on('pose', function(results) {
+    poses2 = results;
+  });
+}
+
+function modelLoaded3() {
+  console.log('poseNet ready');
+  // select('#status').html('Model Loaded');
+  poseNetReady = true;
+  videos[3].loop();
+
+  posesN[3].on('pose', function(results) {
+    poses3 = results;
   });
 }
 
 function draw() {
-  push();
-  image(video, 0, 0, width, height);
+  if (poseNetReady0) work();
+}
 
+function work(){
+  push();
+  image(videos[currentVid], 0, 0, width, height);
+  // console.log(posesN[0]);
+  if (currentVid == 0) {
+    poses = poses0;
+  } else if (currentVid == 1) {
+    poses = poses1;
+  } else if (currentVid == 2) {
+    poses = poses2;
+  } else if (currentVid == 3) {
+    poses = poses3;
+  }
   for (let i = 0; i < poses.length; i++) {
     // For each pose detected, loop through all the keypoints
     let pose = poses[i].pose;
+    
     for (let j = 0; j < numNotes; j++) {
       musicalBoxes[j].hits(pose.keypoints[0]);
       musicalBoxes[j].hits(pose.keypoints[6]);
@@ -143,6 +286,7 @@ function draw() {
     v.show();
   }
 }
+
 // A function to draw ellipses over the detected keypoints
 function drawKeypoints() {
   // Loop through all the poses detected
