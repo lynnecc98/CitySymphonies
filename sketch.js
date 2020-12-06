@@ -30,7 +30,7 @@ let DCButton
 let font;
 let flockFont = [];
 
-let currentVid = 1;
+let currentVid = 0;
 
 let points;
 
@@ -89,15 +89,15 @@ function setup() {
   BusanButton.mousePressed(changeVid2);
   DCButton.mousePressed(changeVid3);
 
-  // points = font.textToPoints('New York', 100, 300, 130, {
-  //   sampleFactor: 0.25
-  // });
+  points = font.textToPoints('New York', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
 
-  // for (var i = 0; i < points.length; i++) {
-  //   var pt = points[i];
-  //   var newPoint = new FlockPoint(pt.x, pt.y);
-  //   flockFont.push(newPoint);
-  // }
+  for (var i = 0; i < points.length; i++) {
+    var pt = points[i];
+    var newPoint = new FlockPoint(pt.x, pt.y);
+    flockFont.push(newPoint);
+  }
 }
 
 function changeVid0(){
@@ -135,43 +135,65 @@ function changeVid3(){
 
 function vidLoaded0() {
   videos[0].size(width, height);
+  // videos[0].hide();
+  // videos[0].show();
+  // videos[0].play();
   posesN[0] = ml5.poseNet(videos[0], modelLoaded0);
-  videos[0].pause();
-  // points = font.textToPoints('Brooklyn', 100, 300, 130, {
-  //   sampleFactor: 0.25
-  // });
+  points = font.textToPoints('Brooklyn', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
+  // video.loop();
+  // video.speed(2);
+  // video.hide();
 }
 function vidLoaded1() {
   videos[1].size(width, height);
+  // videos[1].hide();
   posesN[1] = ml5.poseNet(videos[1], modelLoaded1);
-  videos[1].pause();
-  // points = font.textToPoints('New York', 100, 300, 130, {
-  //   sampleFactor: 0.25
-  // });
-  // for (var i = 0; i < points.length; i++) {
-  //   var pt = points[i];
-  //   var newPoint = new FlockPoint(pt.x, pt.y);
-  //   flockFont.push(newPoint);
-  // }
+  points = font.textToPoints('New York', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
+  for (var i = 0; i < points.length; i++) {
+    var pt = points[i];
+    var newPoint = new FlockPoint(pt.x, pt.y);
+    flockFont.push(newPoint);
+  }
+  // video.loop();
+  // video.speed(2);
+  // video.hide();
 }
 function vidLoaded2() {
   videos[2].size(width, height);
+  // videos[2].hide();
   posesN[2] = ml5.poseNet(videos[2], modelLoaded2);
-  // points = font.textToPoints('Busan', 100, 300, 130, {
-  //   sampleFactor: 0.25
-  // });
+  points = font.textToPoints('Busan', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
+  // video.loop();
+  // video.speed(2);
+  // video.hide();
 }
 function vidLoaded3() {
   videos[3].size(width, height);
+  // videos[3].hide();
   posesN[3] = ml5.poseNet(videos[3], modelLoaded3);
-  // points = font.textToPoints('Washington DC', 100, 300, 130, {
-  //   sampleFactor: 0.25
-  // });
+  points = font.textToPoints('Washington DC', 100, 300, 130, {
+    sampleFactor: 0.25
+  });
+  // video.loop();
+  // video.speed(2);
+  // video.hide();
 }
 
 function gotHumans(humans) {
+  // if there is pose data
   if (humans.length > 0) {
+    // store data from first human detected
     pose = humans[0].pose;
+    //   for (let i = 0; i < humans.length; i++) {
+    //     people.push (humans[i].pose);
+    //   }
+    // console.log(pose);
   }
   people = humans;
 }
@@ -179,6 +201,8 @@ function gotHumans(humans) {
 function modelLoaded0() {
   console.log('poseNet ready');
   poseNetReady0 = true;
+  // select('#status').html('Model Loaded');
+  poseNetReady = true;
   videos[0].loop();
 
   posesN[0].on('pose', function(results) {
@@ -189,6 +213,7 @@ function modelLoaded0() {
 
 function modelLoaded1() {
   console.log('poseNet ready');
+  // select('#status').html('Model Loaded');
   poseNetReady = true;
   videos[1].loop();
 
@@ -199,6 +224,7 @@ function modelLoaded1() {
 
 function modelLoaded2() {
   console.log('poseNet ready');
+  // select('#status').html('Model Loaded');
   poseNetReady = true;
   videos[2].loop();
 
@@ -209,6 +235,7 @@ function modelLoaded2() {
 
 function modelLoaded3() {
   console.log('poseNet ready');
+  // select('#status').html('Model Loaded');
   poseNetReady = true;
   videos[3].loop();
 
@@ -246,18 +273,18 @@ function work(){
       // fill(20 + i * 20, 60);
       // rect(i * width / numNotes, 0, width / numNotes, height);
     }
-    // for (var k = 0; k < flockFont.length; k++) {
-    //   var v = flockFont[k];
-    //   v.behaviors(pose.keypoints[6]);
-    // }
+    for (var k = 0; k < flockFont.length; k++) {
+      var v = flockFont[k];
+      v.behaviors(pose.keypoints[6]);
+    }
     // drawKeypoints();
     // drawSkeleton();
   }
-  // for (var k = 0; k < flockFont.length; k++) {
-  //   var v = flockFont[k];
-  //   v.update();
-  //   v.show();
-  // }
+  for (var k = 0; k < flockFont.length; k++) {
+    var v = flockFont[k];
+    v.update();
+    v.show();
+  }
 }
 
 // A function to draw ellipses over the detected keypoints
