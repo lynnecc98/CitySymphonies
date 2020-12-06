@@ -49,7 +49,7 @@ function preload() {
   videos[0] = createVideo('assets/video0.mov', vidLoaded0);
   videos[1] = createVideo('assets/video1.mov', vidLoaded1);
   videos[2] = createVideo('assets/video2.mov', vidLoaded2);
-  videos[3] = createVideo('assets/video3.mov', vidLoaded3);
+  videos[3] = createVideo('assets/video4.mov', vidLoaded3);
 }
 
 function setup() {
@@ -89,7 +89,7 @@ function setup() {
   BusanButton.mousePressed(changeVid2);
   DCButton.mousePressed(changeVid3);
 
-  points = font.textToPoints('New York', 100, 300, 130, {
+  points = font.textToPoints('Seoul', 220, 300, 130, {
     sampleFactor: 0.25
   });
 
@@ -139,9 +139,9 @@ function vidLoaded0() {
   // videos[0].show();
   // videos[0].play();
   posesN[0] = ml5.poseNet(videos[0], modelLoaded0);
-  points = font.textToPoints('Brooklyn', 100, 300, 130, {
-    sampleFactor: 0.25
-  });
+  // points = font.textToPoints('Brooklyn', 100, 300, 130, {
+  //   sampleFactor: 0.25
+  // });
   // video.loop();
   // video.speed(2);
   // video.hide();
@@ -150,14 +150,14 @@ function vidLoaded1() {
   videos[1].size(width, height);
   // videos[1].hide();
   posesN[1] = ml5.poseNet(videos[1], modelLoaded1);
-  points = font.textToPoints('New York', 100, 300, 130, {
-    sampleFactor: 0.25
-  });
-  for (var i = 0; i < points.length; i++) {
-    var pt = points[i];
-    var newPoint = new FlockPoint(pt.x, pt.y);
-    flockFont.push(newPoint);
-  }
+  // points = font.textToPoints('New York', 100, 300, 130, {
+  //   sampleFactor: 0.25
+  // });
+  // for (var i = 0; i < points.length; i++) {
+  //   var pt = points[i];
+  //   var newPoint = new FlockPoint(pt.x, pt.y);
+  //   flockFont.push(newPoint);
+  // }
   // video.loop();
   // video.speed(2);
   // video.hide();
@@ -177,7 +177,7 @@ function vidLoaded3() {
   videos[3].size(width, height);
   // videos[3].hide();
   posesN[3] = ml5.poseNet(videos[3], modelLoaded3);
-  points = font.textToPoints('Washington DC', 100, 300, 130, {
+  points = font.textToPoints('DC', 300, 300, 130, {
     sampleFactor: 0.25
   });
   // video.loop();
@@ -275,7 +275,7 @@ function work(){
     }
     for (var k = 0; k < flockFont.length; k++) {
       var v = flockFont[k];
-      v.behaviors(pose.keypoints[6]);
+      v.behaviors(pose.keypoints[13]);
     }
     // drawKeypoints();
     // drawSkeleton();
